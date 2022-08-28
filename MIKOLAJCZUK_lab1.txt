@@ -1,0 +1,52 @@
+from __future__ import print_function
+#okreslanie parametrow dziedziny
+def parametry(): #proceura tworzenia parametrow dziedziny
+    b = 512 
+    p = previous_prime(2^(b-1)) #liczymy poprzednia liczbe pierwsa(mniejsza od 2^(b-1))
+    is_prime(p) #sprawdzamy czy jest puierwsza
+    F_cialo = GF(p) #tworzymy cialo Fp
+    generator_g = F_cialo.random_element() #bierzemy losowy element z naszego ciala
+    rzad_podgrupy_n = generator_g.multiplicative_order() #obliczymy rzad podgrupy generowanej przez element losowy
+    zm = generator_g^rzad_podgrupy_n #sprawdzamy czy generator podniesiony do rzedu wynosi 1
+    if(zm == 1):
+        return p, generator_g, rzad_podgrupy_n #jezeli prawda zwracamy parametry
+    else:
+        return false #jezeli nie to wyrzucamy na ekran false
+    
+print("Okreslenie parametrow dziedziny: ")
+parametry() #wywolanie procedury tworzenia dziedziny
+
+p, g, n = parametry() #przypisujemy wartosci zwracane przez procedure parametry do p, g, n
+
+    #protokol generowania kluczy
+def generacja_kluczy(p, g, n): #procedyra przyjmuje jako parametry charakterystyke ciala, rzad podgrupy i jej generator
+    kpriv = randrange(1, n-1, 1) #losujemy liczbe z przedzialu
+    kpub = g^kpriv%p #obliczamy klucz publiczny g^kpriv mod p
+    return kpriv, kpub #zwracamy klucz publiczny i prywatny
+
+print("klucz publiczny i prywatny dla pierwszej osoby ")
+xa, Ka = generacja_kluczy(p, g, n) #wywoluje procedure tworzenia kluczy dla strony A
+xa, Ka
+xb, Kb = generacja_kluczy(p, g, n) #wywoluje procedure tworzenia kluczy dla strony B
+print("klucz publiczny i prywatny dla drugiej osoby ")
+xb, Kb
+    
+    #obliczanie wartosci klucza
+def oblicz_A(Kb, p, xa):
+    k = Kb^xa%p #liczymy Kb^xa mod p czyli nasza sekretna wiadomnosc
+    return k
+
+#obliczanie wartosci klucza
+def oblicz_B(Ka, p, xb):
+    k = Ka^xb%p #liczymy Ka^xb%p
+    return k
+
+print("wartosc sekretnej liczby k dla osoby pierwszej: ")
+oblicz_A(Kb, p, xa)
+print("wartosc sekretnej liczby k dla osoby drugiej: ")
+oblicz_B(Ka, p, xb)
+print("Sprawdzanie poprawności algorytmu")
+if(oblicz_A(Kb, p, xa)== oblicz_B(Ka, p, xb)): #sprawdzamy poprawnosc algorytmu
+    print("Klucze są takie same")
+else:
+    print("Klucze nie sa takie same")
